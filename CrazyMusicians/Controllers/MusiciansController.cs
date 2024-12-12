@@ -69,7 +69,7 @@ namespace CrazyMusicians.Controllers
         [HttpDelete("{id}")] // Belirli bir Id ile müzisyenleri silmek için HTTP Delete isteği
         public IActionResult Delete(int id) // silinecek müzisyenin Id'sini alır.
         {
-            var musicial = musicians.FirstOrDefault(x=>x.Id == id); // Id'ye göre müzisyeni bulur
+            var musicial = musicians.FirstOrDefault(x => x.Id == id); // Id'ye göre müzisyeni bulur
             if (musicial == null) // Eğer müzisyeni bulamazsa
             {
                 return NotFound(); // 404 not found döndürür
@@ -98,6 +98,31 @@ namespace CrazyMusicians.Controllers
             // Filtrelenmiş müzisyen listesini 200 OK yanıtı ile istemciye döner.
             return Ok(musician);
 
+
+        }
+        [HttpPatch("{id:int:min(1)}")]
+        public IActionResult ChangeName(int id, [FromBody] string name)
+        {
+
+
+            // Eğer 'name' parametresi boş veya sadece beyaz boşluktan oluşuyorsa, 400 Bad Request yanıtı döner.
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Name is required");
+            }
+            // 'musicians' listesinden verilen 'id' ile eşleşen müzisyeni tekrar bulur.
+            Musician? musician1 = musicians.FirstOrDefault(x => x.Id == id);
+
+            // Eğer müzisyen bulunamazsa, 404 Not Found yanıtı döner ve hata mesajı ile birlikte 'id' bilgisini içerir.
+            if (musician1== null)
+            {
+                return NotFound($"Musician with {id} not found.");
+            }
+            // Bulunan müzisyenin ismini, istenen yeni isim ile günceller
+            musician1.Name = name;
+
+            return NoContent();  // Başarılı bir güncelleme işlemi sonrası 204 No Content yanıtı döner.
         }
     }
 }
+    
